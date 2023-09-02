@@ -1,0 +1,75 @@
+package com.example.atry;
+
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextDOB;
+    private TextView textViewAge;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextDOB = findViewById(R.id.editTextDOB);
+        Button buttonCalculate = findViewById(R.id.buttonCalculate);
+        textViewAge = findViewById(R.id.textViewAge);
+
+        buttonCalculate.setOnClickListener(v -> calculateAge());
+    }
+
+    private void calculateAge() {
+
+        String dobString = editTextDOB.getText().toString().trim();
+
+        if (!dobString.isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            try {
+                Date dob = sdf.parse(dobString);
+                Calendar today = Calendar.getInstance();
+                Calendar dobCalendar = Calendar.getInstance();
+                dobCalendar.setTime(dob);
+
+                int years = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
+                int months = today.get(Calendar.MONTH) - dobCalendar.get(Calendar.MONTH);
+                int days = today.get(Calendar.DAY_OF_MONTH) - dobCalendar.get(Calendar.DAY_OF_MONTH);
+
+                if (months < 0 || (months == 0 && days < 0)) {
+                    years--;
+                    months += 12;
+                }
+
+                String ageText = "Age: ";
+                if (years > 0) {
+                    ageText += years + (years == 1 ? " year" : " years");
+                }
+                if (months > 0) {
+                    ageText += " " + months + (months == 1 ? " month" : " months");
+                }
+                if (days > 0) {
+                    ageText += " " + days + (days == 1 ? " day" : " days");
+                }
+
+                textViewAge.setText(ageText);
+            } catch (Exception e) {
+                e.printStackTrace();
+                textViewAge.setText("Invalid date format");
+            }
+        } else {
+            textViewAge.setText("Please enter a date of birth");
+        }
+    }
+}
